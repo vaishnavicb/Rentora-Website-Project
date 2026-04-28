@@ -94,6 +94,7 @@ exports.getAllProducts = async (req, res) => {
     }
 
     const products = await Product.find(query)
+      .populate("vendor", "name")
       .sort(sortOption)
       .skip(offsetNum)
       .limit(limitNum);
