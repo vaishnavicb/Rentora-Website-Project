@@ -74,6 +74,11 @@ const ProductCard = ({ product, isWishlisted: initialWishlisted = false }) => {
           {product.description}
         </p>
 
+        {/* Vendor Info */}
+        <p className="text-xs text-gray-500 mb-3">
+          By: {product.vendor?.name || 'Unknown Vendor'}
+        </p>
+
         {/* Details */}
         <div className="grid grid-cols-2 gap-2 mb-4 text-sm">
           <div className="bg-blue-50 p-2 rounded">

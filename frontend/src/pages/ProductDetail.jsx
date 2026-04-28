@@ -322,7 +322,7 @@ export const ProductDetail = () => {
             {/* Vendor Info */}
             <div className="bg-gray-50 rounded-lg p-4 mb-8 border border-gray-200">
               <p className="text-sm text-gray-600">Vendor</p>
-              <p className="text-lg font-semibold text-gray-800">{product.vendor.name}</p>
+              <p className="text-lg font-semibold text-gray-800">{product.vendor?.name}</p>
             </div>
 
             {/* Messages */}

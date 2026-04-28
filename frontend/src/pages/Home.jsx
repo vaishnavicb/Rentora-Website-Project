@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { motion } from 'framer-motion';
-import { FiSearch, FiFilter } from 'react-icons/fi';
-import { productService, wishlistService } from '../services/index';
-import ProductCard from '../components/ProductCard';
-import { useAuth } from '../hooks/useAuth';
+import React, { useState, useEffect, useCallback } from "react";
+import { motion } from "framer-motion";
+import { FiSearch, FiFilter } from "react-icons/fi";
+import { productService, wishlistService } from "../services/index";
+import ProductCard from "../components/ProductCard";
+import { useAuth } from "../hooks/useAuth";
+import likeGif from "../assets/like.gif";
 
 export const Home = () => {
   const { user } = useAuth();
@@ -13,34 +14,34 @@ export const Home = () => {
   const [loadingMore, setLoadingMore] = useState(false);
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
-  const [keyword, setKeyword] = useState('');
-  const [category, setCategory] = useState('');
-  const [sortType, setSortType] = useState('latest');
+  const [keyword, setKeyword] = useState("");
+  const [category, setCategory] = useState("");
+  const [sortType, setSortType] = useState("latest");
   const [categories, setCategories] = useState([]);
   const [searchTimeout, setSearchTimeout] = useState(null);
 
   const defaultCategories = [
-    'Sports Equipment',
-    'Electronics',
-    'Books',
-    'Furniture',
-    'Clothing',
-    'Tools',
-    'Toys',
-    'Vehicles',
-    'Musical Instruments',
-    'Outdoor Gear',
-    'Power Tools',
-    'Camping Equipment',
-    'Party Supplies',
-    'Costumes',
-    'Kitchen Appliances',
-    'Art Supplies',
-    'Cleaning Products',
-    'Office Equipment',
-    'Pet Supplies',
-    'Health & Beauty',
-    'OTHER',
+    "Sports Equipment",
+    "Electronics",
+    "Books",
+    "Furniture",
+    "Clothing",
+    "Tools",
+    "Toys",
+    "Vehicles",
+    "Musical Instruments",
+    "Outdoor Gear",
+    "Power Tools",
+    "Camping Equipment",
+    "Party Supplies",
+    "Costumes",
+    "Kitchen Appliances",
+    "Art Supplies",
+    "Cleaning Products",
+    "Office Equipment",
+    "Pet Supplies",
+    "Health & Beauty",
+    "OTHER",
   ];
 
   const limit = 10; // Load 10 products at a time
@@ -54,19 +55,19 @@ export const Home = () => {
   }, [keyword, category, sortType]);
 
   // Load categories
-    useEffect(() => {
-    const storedCategories = localStorage.getItem('categories');
+  useEffect(() => {
+    const storedCategories = localStorage.getItem("categories");
     if (storedCategories) {
       try {
         const parsed = JSON.parse(storedCategories);
         setCategories(Array.isArray(parsed) ? parsed : defaultCategories);
       } catch {
         setCategories(defaultCategories);
-        localStorage.setItem('categories', JSON.stringify(defaultCategories));
+        localStorage.setItem("categories", JSON.stringify(defaultCategories));
       }
     } else {
       setCategories(defaultCategories);
-      localStorage.setItem('categories', JSON.stringify(defaultCategories));
+      localStorage.setItem("categories", JSON.stringify(defaultCategories));
     }
   }, []);
 
@@ -78,19 +79,25 @@ export const Home = () => {
     }
 
     try {
-      const response = await productService.getProductsInfinite(currentOffset, limit, keyword, category, sortType);
+      const response = await productService.getProductsInfinite(
+        currentOffset,
+        limit,
+        keyword,
+        category,
+        sortType,
+      );
       const newProducts = response.data.products;
 
       if (reset) {
         setProducts(newProducts);
       } else {
-        setProducts(prev => [...prev, ...newProducts]);
+        setProducts((prev) => [...prev, ...newProducts]);
       }
 
       setHasMore(response.data.hasMore);
       setOffset(response.data.offset);
     } catch (err) {
-      console.error('Failed to fetch products:', err);
+      console.error("Failed to fetch products:", err);
     } finally {
       setLoading(false);
       setLoadingMore(false);
@@ -113,8 +120,8 @@ export const Home = () => {
 
   // Add scroll listener
   useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [handleScroll]);
 
   useEffect(() => {
@@ -126,10 +133,12 @@ export const Home = () => {
 
       try {
         const response = await wishlistService.getWishlist();
-        const ids = (response.data || []).map((item) => item.product?._id).filter(Boolean);
+        const ids = (response.data || [])
+          .map((item) => item.product?._id)
+          .filter(Boolean);
         setWishlistedIds(ids);
       } catch (err) {
-        console.error('Failed to fetch wishlist ids:', err);
+        console.error("Failed to fetch wishlist ids:", err);
       }
     };
 
@@ -144,9 +153,11 @@ export const Home = () => {
       clearTimeout(searchTimeout);
     }
 
-    setSearchTimeout(setTimeout(() => {
-      // Search will trigger useEffect above
-    }, 500));
+    setSearchTimeout(
+      setTimeout(() => {
+        // Search will trigger useEffect above
+      }, 500),
+    );
   };
 
   return (
@@ -164,6 +175,11 @@ export const Home = () => {
             className="text-5xl font-bold mb-4"
           >
             Welcome to Rentora
+            <img
+              src={likeGif}
+              alt="like"
+              className="inline-block w-20 h-15 ml-3 mix-blend-multiply"
+            />{" "}
           </motion.h1>
           <p className="text-xl opacity-90">Rent anything, anytime, anywhere</p>
         </div>
@@ -254,7 +270,10 @@ export const Home = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: (index % limit) * 0.1 }}
                   >
-                    <ProductCard product={product} isWishlisted={wishlistedIds.includes(product._id)} />
+                    <ProductCard
+                      product={product}
+                      isWishlisted={wishlistedIds.includes(product._id)}
+                    />
                   </motion.div>
                 ))}
               </motion.div>
@@ -268,14 +287,18 @@ export const Home = () => {
                   transition={{ duration: 1, repeat: Infinity }}
                   className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full"
                 />
-                <span className="ml-3 text-gray-600">Loading more products...</span>
+                <span className="ml-3 text-gray-600">
+                  Loading more products...
+                </span>
               </div>
             )}
 
             {/* End of Results */}
             {!loadingMore && !hasMore && products.length > 0 && (
               <div className="text-center py-8">
-                <p className="text-gray-600">You've seen all available products!</p>
+                <p className="text-gray-600">
+                  You've seen all available products!
+                </p>
               </div>
             )}
           </>
