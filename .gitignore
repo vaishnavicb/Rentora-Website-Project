@@ -25,3 +25,7 @@ lerna-debug.log*
 .vscode/
 !.vscode/extensions.json
 .idea/
+
+# Backend data
+Backend/data/
+
