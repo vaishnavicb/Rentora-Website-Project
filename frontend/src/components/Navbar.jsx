@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FiHome, FiLogOut, FiMenu, FiX, FiPackage, FiShoppingCart, FiBarChart, FiSettings, FiHeart, FiCreditCard } from 'react-icons/fi';
+import { FiHome, FiLogOut, FiMenu, FiX, FiPackage, FiShoppingCart, FiBarChart, FiSettings, FiHeart, FiCreditCard, FiUsers, FiDollarSign } from 'react-icons/fi';
 void motion;
 import { useAuth } from '../hooks/useAuth';
 import { useState } from 'react';
@@ -19,6 +19,10 @@ export const Navbar = () => {
   const links = [
     { href: '/', icon: FiHome, label: 'Home', public: true },
     { href: '/admin', icon: FiBarChart, label: 'Dashboard', role: 'admin' },
+    { href: '/reports/users', icon: FiUsers, label: 'User Report', role: 'admin' },
+    { href: '/reports/products', icon: FiPackage, label: 'Product Report', role: 'admin' },
+    { href: '/reports/orders', icon: FiShoppingCart, label: 'Order Report', role: 'admin' },
+    { href: '/reports/transactions', icon: FiDollarSign, label: 'Transaction Report', role: 'admin' },
     { href: '/wallet', icon: FiCreditCard, label: 'Wallet', authenticated: true },
     { href: '/my-orders', icon: FiShoppingCart, label: 'My Orders', role: 'customer' },
     { href: '/my-products', icon: FiPackage, label: 'My Products', role: 'vendor' },

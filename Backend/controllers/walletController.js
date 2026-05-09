@@ -152,3 +152,19 @@ exports.refundMoney = async (userId, amount) => {
     throw error;
   }
 };
+
+// Get all transactions (admin only)
+exports.getTransactions = async (req, res) => {
+  try {
+    const transactions = await Transaction.find()
+      .populate('user', 'name email phone')
+      .sort({ createdAt: -1 });
+    
+    res.json({
+      transactions,
+      count: transactions.length
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching transactions", error: error.message });
+  }
+};

@@ -383,3 +383,20 @@ exports.returnProduct = async (req, res) => {
   });
 };
 
+exports.getAllOrders = async (req, res) => {
+  try {
+    const orders = await Order.find()
+      .populate('customer', 'name email phone')
+      .populate('vendor', 'name email phone')
+      .populate('product', 'title rentalPrice quantity')
+      .sort({ createdAt: -1 });
+    
+    res.json({
+      orders,
+      count: orders.length
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching orders", error: err.message });
+  }
+};
+

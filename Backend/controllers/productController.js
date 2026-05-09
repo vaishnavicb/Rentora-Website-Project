@@ -1,5 +1,6 @@
 const Product = require("../models/Product");
 const Wishlist = require("../models/Wishlist");
+const Review = require("../models/Review");
 const { cloudinary, isCloudinaryConfigured } = require("../utils/cloudinary");
 const streamifier = require("streamifier");
 
@@ -69,7 +70,7 @@ exports.createProduct = async (req, res) => {
 
 exports.getAllProducts = async (req, res) => {
   try {
-    const { keyword, category, offset = 0, limit = 10, sort = 'latest' } = req.query;
+    const { keyword, category, offset = 0, limit = 1000, sort = 'latest' } = req.query;
 
     let query = {
       isDeleted: { $ne: true }
@@ -84,7 +85,7 @@ exports.getAllProducts = async (req, res) => {
     }
 
     const offsetNum = Number(offset) || 0;
-    const limitNum = Number(limit) || 10;
+    const limitNum = limit === '0' ? 0 : Number(limit) || 10;
 
     let sortOption = { createdAt: -1, _id: -1 };
     if (sort === 'oldest') {
@@ -93,17 +94,37 @@ exports.getAllProducts = async (req, res) => {
       sortOption = { rentCount: -1, createdAt: -1, _id: -1 };
     }
 
-    const products = await Product.find(query)
+    let queryExec = Product.find(query)
       .populate("vendor", "name")
       .sort(sortOption)
-      .skip(offsetNum)
-      .limit(limitNum);
+      .skip(offsetNum);
+
+    if (limitNum > 0) {
+      queryExec = queryExec.limit(limitNum);
+    }
+
+    const products = await queryExec;
+
+    // Calculate average ratings
+    const productIds = products.map(p => p._id);
+    const ratings = await Review.aggregate([
+      { $match: { product: { $in: productIds } } },
+      { $group: { _id: "$product", averageRating: { $avg: "$rating" } } }
+    ]);
+    const ratingMap = ratings.reduce((map, r) => {
+      map[r._id.toString()] = r.averageRating;
+      return map;
+    }, {});
+    const productsWithRating = products.map(p => ({
+      ...p.toObject(),
+      rating: ratingMap[p._id.toString()] || null
+    }));
 
     const total = await Product.countDocuments(query);
     const hasMore = offsetNum + limitNum < total;
 
     res.json({
-      products,
+      products: productsWithRating,
       totalProducts: total,
       hasMore,
       offset: offsetNum + products.length

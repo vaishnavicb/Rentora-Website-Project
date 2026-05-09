@@ -1,9 +1,11 @@
 const User = require("../models/User");
+const Order = require("../models/Order");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 exports.register = async (req, res) => {
   const { name, email, password, role } = req.body;
+  const normalizedEmail = email?.trim().toLowerCase();
 
   if (role === 'admin') {
     return res.status(403).json({ message: 'Admin registration is not allowed through the public signup form' });
@@ -11,7 +13,7 @@ exports.register = async (req, res) => {
 
   const userRole = ['customer', 'vendor'].includes(role) ? role : 'customer';
 
-  const userExists = await User.findOne({ email });
+  const userExists = await User.findOne({ email: normalizedEmail });
   if (userExists) {
     return res.status(400).json({ message: "User already exists" });
   }
@@ -20,7 +22,7 @@ exports.register = async (req, res) => {
 
   const user = await User.create({
     name,
-    email,
+    email: normalizedEmail,
     password: hashedPassword,
     role: userRole
   });
@@ -44,6 +46,7 @@ exports.register = async (req, res) => {
 
 exports.registerAdmin = async (req, res) => {
   const { name, email, password, adminCode } = req.body;
+  const normalizedEmail = email?.trim().toLowerCase();
 
   const adminSecret = process.env.ADMIN_REGISTRATION_CODE;
   const adminLimit = parseInt(process.env.ADMIN_ACCOUNT_LIMIT || '3', 10);
@@ -61,7 +64,7 @@ exports.registerAdmin = async (req, res) => {
     return res.status(403).json({ message: `Admin registration limit reached (${adminLimit} admins)` });
   }
 
-  const userExists = await User.findOne({ email });
+  const userExists = await User.findOne({ email: normalizedEmail });
   if (userExists) {
     return res.status(400).json({ message: 'User already exists' });
   }
@@ -70,7 +73,7 @@ exports.registerAdmin = async (req, res) => {
 
   const user = await User.create({
     name,
-    email,
+    email: normalizedEmail,
     password: hashedPassword,
     role: 'admin'
   });
@@ -94,8 +97,9 @@ exports.registerAdmin = async (req, res) => {
 
 exports.login = async (req, res) => {
   const { email, password } = req.body;
+  const normalizedEmail = email?.trim().toLowerCase();
 
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email: normalizedEmail });
   if (!user) {
     return res.status(400).json({ message: "Invalid credentials" });
   }
@@ -119,4 +123,39 @@ exports.login = async (req, res) => {
       role: user.role
     }
   });
+};
+
+exports.getAllUsers = async (req, res) => {
+  try {
+    const usersWithRentals = await User.aggregate([
+      {
+        $lookup: {
+          from: 'orders',
+          localField: '_id',
+          foreignField: 'customer',
+          as: 'orders',
+        },
+      },
+      {
+        $addFields: {
+          totalRentals: {
+            $sum: '$orders.quantity',
+          },
+        },
+      },
+      {
+        $project: {
+          password: 0,
+          orders: 0,
+        },
+      },
+    ]);
+
+    res.json({
+      users: usersWithRentals,
+      count: usersWithRentals.length,
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching users", error: err.message });
+  }
 };

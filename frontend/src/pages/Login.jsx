@@ -29,7 +29,7 @@ export const Login = () => {
     setError('');
 
     try {
-      const response = await authService.login(formData.email, formData.password);
+      const response = await authService.login(formData.email.trim().toLowerCase(), formData.password);
       login(response.data.user, response.data.token);
       if (response.data.user?.role === 'admin') {
         navigate('/admin');

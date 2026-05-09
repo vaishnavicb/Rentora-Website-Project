@@ -42,7 +42,7 @@ export const AdminLogin = () => {
         login(response.data.user, response.data.token);
         navigate('/admin');
       } else {
-        const response = await authService.login(formData.email, formData.password);
+        const response = await authService.login(formData.email.trim().toLowerCase(), formData.password);
         const adminUser = response.data.user;
 
         if (adminUser?.role !== 'admin') {

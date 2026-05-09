@@ -17,6 +17,10 @@ import { AdminUsers } from './pages/AdminUsers';
 import { AdminVendors } from './pages/AdminVendors';
 import { AdminOrders } from './pages/AdminOrders';
 import { AdminGrievances } from './pages/AdminGrievances';
+import { UserReport } from './pages/UserReport';
+import { ProductReport } from './pages/ProductReport';
+import { OrderReport } from './pages/OrderReport';
+import { TransactionReport } from './pages/TransactionReport';
 import { Wishlist } from './pages/Wishlist';
 import Wallet from './pages/Wallet';
 import './App.css';
@@ -124,6 +128,40 @@ export default function App() {
             element={
               <ProtectedRoute requiredRole="admin">
                 <AdminGrievances />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Reports Routes */}
+          <Route
+            path="/reports/users"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <UserReport />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reports/products"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <ProductReport />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reports/orders"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <OrderReport />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reports/transactions"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <TransactionReport />
               </ProtectedRoute>
             }
           />

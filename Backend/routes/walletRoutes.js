@@ -1,6 +1,7 @@
 const express = require("express");
-const { getWallet, addMoney, withdrawMoney } = require("../controllers/walletController");
+const { getWallet, addMoney, withdrawMoney, getTransactions } = require("../controllers/walletController");
 const { protect } = require("../middleware/authMiddleware");
+const { adminOnly } = require("../middleware/roleMiddleware");
 
 const router = express.Router();
 
@@ -12,5 +13,8 @@ router.post("/add-money", protect, addMoney);
 
 // Withdraw money from wallet (protected)
 router.post("/withdraw", protect, withdrawMoney);
+
+// Get all transactions (admin only)
+router.get("/transactions", protect, adminOnly, getTransactions);
 
 module.exports = router;

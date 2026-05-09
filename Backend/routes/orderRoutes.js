@@ -7,13 +7,15 @@ const {
   getVendorOrders,
   updateOrderStatus,
   returnProduct,
-  cancelOrder
+  cancelOrder,
+  getAllOrders
 } = require("../controllers/orderController");
 
 const { protect } = require("../middleware/authMiddleware");
-const { vendorOnly } = require("../middleware/roleMiddleware");
+const { vendorOnly, adminOnly } = require("../middleware/roleMiddleware");
 
 router.post("/", protect, createOrder);
+router.get("/", protect, adminOnly, getAllOrders);
 router.get("/my-orders", protect, getMyOrders);
 router.get("/vendor-orders", protect, vendorOnly, getVendorOrders);
 router.put("/update-status", protect, vendorOnly, updateOrderStatus);

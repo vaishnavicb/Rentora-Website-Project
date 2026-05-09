@@ -203,6 +203,55 @@ export const AdminDashboard = () => {
           </div>
         </motion.div>
 
+        {/* Reports Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="mb-10"
+        >
+          <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="flex items-center justify-between gap-4 mb-6">
+              <div>
+                <p className="text-sm uppercase tracking-[0.3em] text-gray-500 font-semibold">
+                  Analytics & Reports
+                </p>
+                <h2 className="text-2xl font-bold text-gray-900 mt-2">Generate Reports</h2>
+              </div>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              <ActionCard
+                icon={FiUsers}
+                title="User Report"
+                description="Detailed report of all users, roles, and account information."
+                accent="bg-blue-100 text-blue-700"
+                to="/reports/users"
+              />
+              <ActionCard
+                icon={FiPackage}
+                title="Product Report"
+                description="Comprehensive product inventory and availability analysis."
+                accent="bg-purple-100 text-purple-700"
+                to="/reports/products"
+              />
+              <ActionCard
+                icon={FiCheckCircle}
+                title="Order Report"
+                description="Complete order history with status and revenue breakdown."
+                accent="bg-green-100 text-green-700"
+                to="/reports/orders"
+              />
+              <ActionCard
+                icon={FiDollarSign}
+                title="Transaction Report"
+                description="Wallet transactions and financial activity records."
+                accent="bg-orange-100 text-orange-700"
+                to="/reports/transactions"
+              />
+            </div>
+          </div>
+        </motion.div>
+
         {loading ? (
           <div className="flex justify-center items-center h-64">
             <motion.div
